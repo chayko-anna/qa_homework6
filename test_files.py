@@ -13,35 +13,31 @@ def test_files():
     CURRENT_DIRECTORY = os.path.dirname(CURRENT_FILE)
 
     zip_path = os.path.join(CURRENT_DIRECTORY, 'files.zip')
-
-   # with ZipFile(zip_path) as zip_file:
-   #     if namelist not in zip_file.namelist():
-   #         assert False, f"File {namelist} not found."
-
+    
     if ".xlsx" in zip_path:
-        with ZipFile('resources/archive.zip') as zip_file:
+        with ZipFile(zip_path) as zip_file:
             with zip_file.open(zip_path, "r") as file:
                 excel_file = openpyxl.load_workbook(file)
                 excel_sheet = excel_file.active
                 text = []
                 for row in excel_sheet.iter_rows(values_only=True):
                     text.append(row)
-                actual_result = ', '.join([', '.join(row) for row in text])
-                return actual_result
+                excel_out = ', '.join([', '.join(row) for row in text])
+                return excel_out
 
     if ".csv" in zip_path:
-        with ZipFile('resources/archive.zip') as zip_file:
+        with ZipFile(zip_path) as zip_file:
             with zip_file.open(zip_path, "r") as file:
-                excel_file = openpyxl.load_workbook(file)
-                excel_sheet = excel_file.active
+                csv_content = file.read().decode('utf-8')
+                csv_reader = csv.reader(csv_content.splitlines())
                 text = []
-                for row in excel_sheet.iter_rows(values_only=True):
+                for row in csv_reader:
                     text.append(row)
-                actual_result = ', '.join([', '.join(row) for row in text])
-                return actual_result
+                csv_out = ', '.join([', '.join(row) for row in text])
+                return csv_out
 
     if ".pdf" in zip_path:
-        with ZipFile('resources/archive.zip') as zip_file:
+        with ZipFile(zip_path) as zip_file:
             with zip_file.open(zip_path, "r") as file:
                 pdf_file = PdfReader(file)
-                text = []
+                return pdf_file.pages[0].extract_text()

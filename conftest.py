@@ -1,10 +1,9 @@
 import os
-from asyncio import wait_for
 from zipfile import ZipFile
 import pytest
-import time
 
-@pytest.fixture()
+
+@pytest.fixture(scope="session", autouse=True)
 def zip_files():
     CURRENT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
     res_dir = os.path.join(CURRENT_DIRECTORY, 'res')
@@ -17,4 +16,5 @@ def zip_files():
                 res_zip.write(add_file, arcname=file)
     yield
 
-    os.remove(zip_path)
+    if os.path.exists(zip_path):
+        os.remove(zip_path)
